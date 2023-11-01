@@ -407,7 +407,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                       </div>
                     ) : (                      
                       <div>
-                      <Image
+                      {/* <Image
                         src="/images/CurBot.png"
                         alt=""
                         width={200}
@@ -419,7 +419,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           border: '1px solid black', // Add a transparent border with 10px width
                           borderRadius: '10px', // Add a border radius of 10px
                         }}
-                      />
+                      /> */}
+                      CurBot
                     </div>
                     )}
                   </div>
