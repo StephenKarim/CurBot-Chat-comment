@@ -390,7 +390,7 @@ export const ChatInput = ({
         </a> */}
         {' '}
         {t(
-          "CurBot is a chatbot kit for OpenAI's chat models aiming to mimic ChatGPT's interface and functionality.",
+          "CurBot is a copy of a chatbot kit for OpenAI's chat models aiming to mimic ChatGPT's interface and functionality.",
         )}
       </div>
     </div>
