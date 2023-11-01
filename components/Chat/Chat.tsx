@@ -1,4 +1,5 @@
 import { IconClearAll, IconSettings } from '@tabler/icons-react';
+import Image from 'next/image';
 import {
   MutableRefObject,
   memo,
@@ -405,7 +406,21 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                         <Spinner size="16px" className="mx-auto" />
                       </div>
                     ) : (                      
-                      'CurBot Chat'
+                      <div>
+                      <Image
+                        src="/images/CurBot.png"
+                        alt=""
+                        width={200}
+                        height={150}
+                        className="mx-auto mb-4"
+                        style={{
+                          width: 'clamp(30px, 50%, 50px)', // Use 'clamp' for the width
+                          height: 'auto', // Use 'clamp' for the height
+                          border: '1px solid black', // Add a transparent border with 10px width
+                          borderRadius: '10px', // Add a border radius of 10px
+                        }}
+                      />
+                    </div>
                     )}
                   </div>
 {                 /* 
