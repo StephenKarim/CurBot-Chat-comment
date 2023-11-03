@@ -311,6 +311,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   
     const myStyle = {
       fontSize: '16px',
+      
     };
 
     const myStyle2 = {
@@ -438,7 +439,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                       
                       
                       
-                      Welcome to CurBot{'\n'}<div style={myStyle}>Ask me anything about C++ Programming!</div>
+                      Welcome to CurBot{'\n'}<div style={myStyle}>Hope you are enjoying the Nagar!</div>
                     </div>
                     )}
                   </div>
