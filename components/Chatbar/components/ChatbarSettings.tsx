@@ -1,4 +1,4 @@
-import { IconFileExport, IconSettings } from '@tabler/icons-react';
+import { IconFileExport, IconHome, IconSettings } from '@tabler/icons-react';
 import { useContext, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
@@ -36,13 +36,28 @@ export const ChatbarSettings = () => {
     handleApiKeyChange,
   } = useContext(ChatbarContext);
 
+  const goToHome = () => {    
+    window.location.href = 'https://curbot.vercel.app/index.html';
+  };
+
   return (
     <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
+
+      <SidebarButton
+        text={t('Home Page')}
+        icon={<IconHome size={18} />}
+        onClick={() => goToHome()}
+      />
+
+
+
       {conversations.length > 0 ? (
         <ClearConversations onClearConversations={handleClearConversations} />
       ) : null}
 
       <Import onImport={handleImportConversations} />
+
+      
 
       <SidebarButton
         text={t('Export data')}
