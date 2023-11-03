@@ -1,14 +1,14 @@
-// import { IconHome, IconKey } from '@tabler/icons-react';
-// import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
-// import { useTranslation } from 'react-i18next';
+ import { IconHome, IconKey } from '@tabler/icons-react';
+ import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
+ import { useTranslation } from 'react-i18next';
 
-// import { PluginID, PluginKey } from '@/types/plugin';
+import { PluginID, PluginKey } from '@/types/plugin';
 
-// import HomeContext from '@/pages/api/home/home.context';
+import HomeContext from '@/pages/api/home/home.context';
 
-// import { SidebarButton } from '@/components/Sidebar/SidebarButton';
+import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 
-// import ChatbarContext from '../Chatbar.context';
+import ChatbarContext from '../Chatbar.context';
 
 // export const PluginKeys = () => {
 //   const { t } = useTranslation('sidebar');
