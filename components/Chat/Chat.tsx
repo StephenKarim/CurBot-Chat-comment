@@ -308,6 +308,17 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   };
   const throttledScrollDown = throttle(scrollDown, 250);
 
+  
+    const myStyle = {
+      fontSize: '16px',
+    };
+
+    const myStyle2 = {
+      fontSize: '20px',
+    };
+  
+  
+
   // useEffect(() => {
   //   console.log('currentMessage', currentMessage);
   //   if (currentMessage) {
@@ -347,6 +358,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       }
     };
   }, [messagesEndRef]);
+  
+ 
+   
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
@@ -406,7 +420,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                         <Spinner size="16px" className="mx-auto" />
                       </div>
                     ) : (                      
-                      <div>
+                      <div style={myStyle2}>
                       {/* <Image removed
                         src="/images/CurBot.png"
                         alt=""
@@ -420,7 +434,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           borderRadius: '10px', // Add a border radius of 10px
                         }}
                       /> */}
-                      I am CurBot, ask me anything about C++ Programming!
+
+                      
+                      
+                      
+                      Welcome to CurBot{'\n'}<div style={myStyle}>Ask me anything about C++ Programming!</div>
                     </div>
                     )}
                   </div>
