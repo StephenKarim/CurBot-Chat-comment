@@ -420,7 +420,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           borderRadius: '10px', // Add a border radius of 10px
                         }}
                       /> */}
-                      CurBot
+                      I am CurBot, ask me anything about C++ Programming!
                     </div>
                     )}
                   </div>
