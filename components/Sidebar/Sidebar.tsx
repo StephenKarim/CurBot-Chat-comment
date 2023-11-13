@@ -1,7 +1,8 @@
+// Importing icons and React utilities
 import { IconFolderPlus, IconMistOff, IconPlus } from '@tabler/icons-react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-
+// Importing components
 import {
   CloseSidebarButton,
   OpenSidebarButton,
@@ -9,6 +10,7 @@ import {
 
 import Search from '../Search';
 
+// Defining the prop types for the Sidebar component
 interface Props<T> {
   isOpen: boolean;
   addItemButtonTitle: string;
@@ -25,6 +27,7 @@ interface Props<T> {
   handleDrop: (e: any) => void;
 }
 
+// Sidebar component definition
 const Sidebar = <T,>({
   isOpen,
   addItemButtonTitle,
@@ -40,9 +43,9 @@ const Sidebar = <T,>({
   handleCreateFolder,
   handleDrop,
 }: Props<T>) => {
-  const { t } = useTranslation('promptbar');
+  const { t } = useTranslation('promptbar'); // Using the translation hook
 
-  const allowDrop = (e: any) => {
+  const allowDrop = (e: any) => { // Drag and drop event handling functions
     e.preventDefault();
   };
 
@@ -54,11 +57,13 @@ const Sidebar = <T,>({
     e.target.style.background = 'none';
   };
 
+  // Rendering the Sidebar component based on its state
   return isOpen ? (
     <div>
       <div
         className={`fixed top-0 ${side}-0 z-40 flex h-full w-[260px] flex-none flex-col space-y-2 bg-[#202123] p-2 text-[14px] transition-all sm:relative sm:top-0`}
       >
+        {/* Creating an "Add Item" button */}
         <div className="flex items-center">
           <button
             className="text-sidebar flex w-[190px] flex-shrink-0 cursor-pointer select-none items-center gap-3 rounded-md border border-white/20 p-3 text-white transition-colors duration-200 hover:bg-gray-500/10"
@@ -78,12 +83,14 @@ const Sidebar = <T,>({
             <IconFolderPlus size={16} />
           </button> */}
         </div>
+        {/* Adding a search input component */}
         <Search
           placeholder={t('Search...') || ''}
           searchTerm={searchTerm}
           onSearch={handleSearchTerm}
         />
 
+        {/* Displaying folder and item components based on the provided data */}
         <div className="flex-grow overflow-auto">
           {items?.length > 0 && (
             <div className="flex border-b border-white/20 pb-2">
@@ -110,14 +117,16 @@ const Sidebar = <T,>({
             </div>
           )}
         </div>
+        {/* Adding a footer component if provided */}
         {footerComponent}
       </div>
 
+      {/* Adding a close button for the Sidebar */}
       <CloseSidebarButton onClick={toggleOpen} side={side} />
     </div>
   ) : (
-    <OpenSidebarButton onClick={toggleOpen} side={side} />
+    <OpenSidebarButton onClick={toggleOpen} side={side} /> 
   );
 };
 
-export default Sidebar;
+export default Sidebar; 
