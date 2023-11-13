@@ -1,7 +1,7 @@
 import { OpenAIModel } from './openai';
 
 export interface Message {
-  role: Role;
+  role: Role;//hi
   content: string;
 }
 
