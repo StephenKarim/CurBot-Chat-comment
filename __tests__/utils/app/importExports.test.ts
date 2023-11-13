@@ -1,3 +1,4 @@
+// Importing constants and utility functions from the specified paths
 import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from '@/utils/app/const';
 import {
   cleanData,
@@ -8,11 +9,13 @@ import {
   isLatestExportFormat,
 } from '@/utils/app/importExport';
 
+// Importing export format types and OpenAI model types
 import { ExportFormatV1, ExportFormatV2, ExportFormatV4 } from '@/types/export';
 import { OpenAIModelID, OpenAIModels } from '@/types/openai';
 
 import { describe, expect, it } from 'vitest';
 
+// Describing test cases for export format functions
 describe('Export Format Functions', () => {
   describe('isExportFormatV1', () => {
     it('should return true for v1 format', () => {
@@ -26,6 +29,7 @@ describe('Export Format Functions', () => {
     });
   });
 
+  // Testing isExportFormatV2 function
   describe('isExportFormatV2', () => {
     it('should return true for v2 format', () => {
       const obj = { history: [], folders: [] };
@@ -38,6 +42,7 @@ describe('Export Format Functions', () => {
     });
   });
 
+  // Testing isExportFormatV3 function
   describe('isExportFormatV3', () => {
     it('should return true for v3 format', () => {
       const obj = { version: 3, history: [], folders: [] };
@@ -50,6 +55,7 @@ describe('Export Format Functions', () => {
     });
   });
 
+  // Testing isExportFormatV4 function
   describe('isExportFormatV4', () => {
     it('should return true for v4 format', () => {
       const obj = { version: 4, history: [], folders: [], prompts: [] };
@@ -63,6 +69,7 @@ describe('Export Format Functions', () => {
   });
 });
 
+// Describing test cases for cleanData function
 describe('cleanData Functions', () => {
   describe('cleaning v1 data', () => {
     it('should return the latest format', () => {
@@ -111,7 +118,7 @@ describe('cleanData Functions', () => {
       });
     });
   });
-
+// Cleaning v2 data and checking for the latest format
   describe('cleaning v2 data', () => {
     it('should return the latest format', () => {
       const data = {
@@ -173,7 +180,7 @@ describe('cleanData Functions', () => {
       });
     });
   });
-
+// Cleaning v4 data and checking for the latest format
   describe('cleaning v4 data', () => {
     it('should return the latest format', () => {
       const data = {
@@ -219,6 +226,7 @@ describe('cleanData Functions', () => {
 
       const obj = cleanData(data);
       expect(isLatestExportFormat(obj)).toBe(true);
+      // Checking if the cleaned data matches the expected format
       expect(obj).toEqual({
         version: 4,
         history: [
