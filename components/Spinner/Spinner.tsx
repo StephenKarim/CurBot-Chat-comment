@@ -1,12 +1,15 @@
-import { FC } from 'react';
+import { FC } from 'react'; // Import the FC (Functional Component) type from the React library.
 
+// Define the Props interface for the Spinner component.
 interface Props {
-  size?: string;
-  className?: string;
+  size?: string;  // Optional prop for the size of the spinner.
+  className?: string; // Optional prop for additional CSS classes.
 }
 
+// Define the Spinner functional component.
 const Spinner = ({ size = '1em', className = '' }: Props) => {
   return (
+    // SVG element representing a spinning animation.
     <svg
       stroke="currentColor"
       fill="none"
@@ -19,6 +22,7 @@ const Spinner = ({ size = '1em', className = '' }: Props) => {
       width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
+      {/* Lines representing the spinning animation. */}
       <line x1="12" y1="2" x2="12" y2="6"></line>
       <line x1="12" y1="18" x2="12" y2="22"></line>
       <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
@@ -31,4 +35,4 @@ const Spinner = ({ size = '1em', className = '' }: Props) => {
   );
 };
 
-export default Spinner;
+export default Spinner; // Export the Spinner component as the default export.
