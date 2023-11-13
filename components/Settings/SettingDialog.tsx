@@ -1,29 +1,31 @@
-import { FC, useContext, useEffect, useReducer, useRef } from 'react';
+import { FC, useContext, useEffect, useReducer, useRef } from 'react'; // Import necessary components and hooks from the React and Next.js libraries.
 
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'; // Import the useTranslation hook from the next-i18next library for internationalization.
 
-import { useCreateReducer } from '@/hooks/useCreateReducer';
+import { useCreateReducer } from '@/hooks/useCreateReducer';// Import the useCreateReducer custom hook for creating a reducer.
 
-import { getSettings, saveSettings } from '@/utils/app/settings';
+import { getSettings, saveSettings } from '@/utils/app/settings'; // Import utility functions for getting and saving settings.
 
-import { Settings } from '@/types/settings';
+import { Settings } from '@/types/settings'; // Import the Settings type from the settings module.
 
-import HomeContext from '@/pages/api/home/home.context';
+import HomeContext from '@/pages/api/home/home.context'; // Import the HomeContext from the home page API.
 
+// Define the Props interface for the SettingDialog component.
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+// Define the SettingDialog functional component.
 export const SettingDialog: FC<Props> = ({ open, onClose }) => {
-  const { t } = useTranslation('settings');
-  const settings: Settings = getSettings();
-  const { state, dispatch } = useCreateReducer<Settings>({
+  const { t } = useTranslation('settings');  // Initialize the useTranslation hook for the 'settings' namespace.
+  const settings: Settings = getSettings(); // Get settings from local storage.
+  const { state, dispatch } = useCreateReducer<Settings>({ // Create a reducer for the settings state.
     initialState: settings,
   });
-  const { dispatch: homeDispatch } = useContext(HomeContext);
-  const modalRef = useRef<HTMLDivElement>(null);
-
+  const { dispatch: homeDispatch } = useContext(HomeContext);  // Access the homeDispatch function from the HomeContext.
+  const modalRef = useRef<HTMLDivElement>(null); // Create a reference to the modal element.
+  // Effect to handle mouse events for closing the modal when clicked outside.
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -42,7 +44,7 @@ export const SettingDialog: FC<Props> = ({ open, onClose }) => {
       window.removeEventListener('mousedown', handleMouseDown);
     };
   }, [onClose]);
-
+  // Function to handle saving settings and dispatching to home context.
   const handleSave = () => {
     homeDispatch({ field: 'lightMode', value: state.theme });
     saveSettings(state);
