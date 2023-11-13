@@ -5,7 +5,7 @@ import {
   IconPencil,
   IconTrash,
   IconX,
-} from '@tabler/icons-react';
+} from '@tabler/icons-react'; // Importing required icons and React components
 import {
   KeyboardEvent,
   ReactElement,
@@ -20,6 +20,7 @@ import HomeContext from '@/pages/api/home/home.context';
 
 import SidebarActionButton from '@/components/Buttons/SidebarActionButton';
 
+// Defining the Props interface for the Folder component
 interface Props {
   currentFolder: FolderInterface;
   searchTerm: string;
@@ -27,19 +28,22 @@ interface Props {
   folderComponent: (ReactElement | undefined)[];
 }
 
+// Folder component definition
 const Folder = ({
   currentFolder,
   searchTerm,
   handleDrop,
   folderComponent,
 }: Props) => {
-  const { handleDeleteFolder, handleUpdateFolder } = useContext(HomeContext);
+  const { handleDeleteFolder, handleUpdateFolder } = useContext(HomeContext); // Destructuring functions from HomeContext
 
+  // State variables for managing component behavior
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
+  // Event handler for Enter key press during renaming
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -47,12 +51,14 @@ const Folder = ({
     }
   };
 
+   // Function to handle folder renaming
   const handleRename = () => {
     handleUpdateFolder(currentFolder.id, renameValue);
     setRenameValue('');
     setIsRenaming(false);
   };
 
+  // Event handlers for drag-and-drop functionality
   const dropHandler = (e: any) => {
     if (e.dataTransfer) {
       setIsOpen(true);
@@ -75,6 +81,7 @@ const Folder = ({
     e.target.style.background = 'none';
   };
 
+  // Effect to reset state flags when either renaming or deleting is active
   useEffect(() => {
     if (isRenaming) {
       setIsDeleting(false);
@@ -83,6 +90,7 @@ const Folder = ({
     }
   }, [isRenaming, isDeleting]);
 
+  // Effect to open the folder when a search term is present
   useEffect(() => {
     if (searchTerm) {
       setIsOpen(true);
@@ -91,10 +99,12 @@ const Folder = ({
     }
   }, [searchTerm]);
 
+  // JSX structure for rendering the Folder component
   return (
     <>
       <div className="relative flex items-center">
         {isRenaming ? (
+      // Rendering the input field during renaming
           <div className="flex w-full items-center gap-3 bg-[#343541]/90 p-3">
             {isOpen ? (
               <IconCaretDown size={18} />
@@ -111,6 +121,7 @@ const Folder = ({
             />
           </div>
         ) : (
+      // Rendering the button for regular folder interactions
           <button
             className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90`}
             onClick={() => setIsOpen(!isOpen)}
@@ -131,6 +142,7 @@ const Folder = ({
           </button>
         )}
 
+        {/* Rendering the delete and rename actions */}
         {(isDeleting || isRenaming) && (
           <div className="absolute right-1 z-10 flex text-gray-300">
             <SidebarActionButton
@@ -161,6 +173,7 @@ const Folder = ({
           </div>
         )}
 
+        {/* Rendering the rename and delete buttons */}
         {!isDeleting && !isRenaming && (
           <div className="absolute right-1 z-10 flex text-gray-300">
             <SidebarActionButton
@@ -184,9 +197,10 @@ const Folder = ({
         )}
       </div>
 
+       {/* Rendering the child folder components if the folder is open */}
       {isOpen ? folderComponent : null}
     </>
   );
 };
 
-export default Folder;
+export default Folder; // Exporting the Folder component as the default export
