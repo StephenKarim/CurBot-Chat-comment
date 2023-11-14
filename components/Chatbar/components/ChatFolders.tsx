@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import { useContext } from 'react';
 
 import { FolderInterface } from '@/types/folder';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const ChatFolders = ({ searchTerm }: Props) => {
+  // Accessing state and action functions from the global context
   const {
     state: { folders, conversations },
     handleUpdateConversation,
@@ -20,7 +22,9 @@ export const ChatFolders = ({ searchTerm }: Props) => {
 
   const handleDrop = (e: any, folder: FolderInterface) => {
     if (e.dataTransfer) {
+      // Extracting conversation data from the drop event
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
+      // Updating the conversation with the new folder ID
       handleUpdateConversation(conversation, {
         key: 'folderId',
         value: folder.id,
@@ -36,6 +40,7 @@ export const ChatFolders = ({ searchTerm }: Props) => {
         .map((conversation, index) => {
           if (conversation.folderId === currentFolder.id) {
             return (
+              // Rendering the ConversationComponent for each conversation
               <div key={index} className="ml-5 gap-2 border-l pl-2">
                 <ConversationComponent conversation={conversation} />
               </div>
@@ -45,6 +50,7 @@ export const ChatFolders = ({ searchTerm }: Props) => {
     );
   };
 
+  // Rendering the chat folders and associated conversations
   return (
     <div className="flex w-full flex-col pt-2">
       {folders
