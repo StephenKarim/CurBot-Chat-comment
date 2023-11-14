@@ -1,23 +1,31 @@
+// Import necessary modules and types for Next.js API route
 import { NextApiRequest, NextApiResponse } from 'next';
 
+// Import constants and utility functions/modules
 import { OPENAI_API_HOST } from '@/utils/app/const';
 import { cleanSourceText } from '@/utils/server/google';
 
+// Import types for chat and Google API
 import { Message } from '@/types/chat';
 import { GoogleBody, GoogleSource } from '@/types/google';
 
+// Import modules for web scraping and content extraction
 import { Readability } from '@mozilla/readability';
 import endent from 'endent';
 import jsdom, { JSDOM } from 'jsdom';
 
+// Define the API route handler
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   try {
+    // Extract relevant data from the request body
     const { messages, key, model, googleAPIKey, googleCSEId } =
       req.body as GoogleBody;
 
+    // Extract the user's last message from the array
     const userMessage = messages[messages.length - 1];
     const query = encodeURIComponent(userMessage.content.trim());
 
+    // Fetch search results from the Google Custom Search API
     const googleRes = await fetch(
       `https://customsearch.googleapis.com/customsearch/v1?key=${
         googleAPIKey ? googleAPIKey : process.env.GOOGLE_API_KEY
@@ -28,6 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     const googleData = await googleRes.json();
 
+    // Extract relevant information from Google search results
     const sources: GoogleSource[] = googleData.items.map((item: any) => ({
       title: item.title,
       link: item.link,
@@ -37,13 +46,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
       text: '',
     }));
 
+    // Fetch and extract text content from the web pages of the search results
     const sourcesWithText: any = await Promise.all(
       sources.map(async (source) => {
         try {
+          // Set a timeout for the fetch request to avoid long waits
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Request timed out')), 5000),
           );
-
+          // Fetch the web page and handle timeout
           const res = (await Promise.race([
             fetch(source.link),
             timeoutPromise,
@@ -82,8 +93,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
       }),
     );
 
+    // Filter out null values from the fetched sources
     const filteredSources: GoogleSource[] = sourcesWithText.filter(Boolean);
 
+    // Construct a prompt for the user based on the fetched sources
     const answerPrompt = endent`
     Provide me with the information I requested. Use the sources to provide an accurate response. Respond in markdown format. Cite the sources you used as a markdown link as you use them at the end of each sentence by number of the source (ex: [[1]](link.com)). Provide an accurate response and then stop. Today's date is ${new Date().toLocaleDateString()}.
 
@@ -109,9 +122,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     Response:
     `;
-
+    // Create a message object for the user with the constructed prompt
     const answerMessage: Message = { role: 'user', content: answerPrompt };
 
+    // Make a request to the OpenAI API to generate a response based on the prompt
     const answerRes = await fetch(`${OPENAI_API_HOST}/v1/chat/completions`, {
       headers: {
         'Content-Type': 'application/json',
@@ -136,14 +150,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
       }),
     });
 
+     // Parse the response from the OpenAI API and extract the generated answer
     const { choices: choices2 } = await answerRes.json();
     const answer = choices2[0].message.content;
 
+     // Send a JSON response with the generated answer
     res.status(200).json({ answer });
   } catch (error) {
-    console.error(error);
+    console.error(error); // Handle errors by logging them and sending a 500 Internal Server Error response
     res.status(500).json({ error: 'Error'})
   }
 };
 
-export default handler;
+export default handler; // Export the API route handler
