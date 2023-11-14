@@ -1,3 +1,4 @@
+// Import necessary modules and types from React and other sources.
 import { Dispatch, createContext } from 'react';
 
 import { ActionType } from '@/hooks/useCreateReducer';
@@ -8,6 +9,7 @@ import { FolderType } from '@/types/folder';
 
 import { HomeInitialState } from './home.state';
 
+// Define an interface to specify the shape of the context's value.
 export interface HomeContextProps {
   state: HomeInitialState;
   dispatch: Dispatch<ActionType<HomeInitialState>>;
@@ -22,6 +24,7 @@ export interface HomeContextProps {
   ) => void;
 }
 
+// Create a new React context for the home-related state and actions.
 const HomeContext = createContext<HomeContextProps>(undefined!);
 
-export default HomeContext;
+export default HomeContext; // Export the created context to be used in other parts of the application.
