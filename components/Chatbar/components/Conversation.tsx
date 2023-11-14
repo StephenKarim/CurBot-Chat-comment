@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import {
   IconCheck,
   IconMessage,
@@ -21,11 +22,14 @@ import HomeContext from '@/pages/api/home/home.context';
 import SidebarActionButton from '@/components/Buttons/SidebarActionButton';
 import ChatbarContext from '@/components/Chatbar/Chatbar.context';
 
+// Props interface for ConversationComponent
 interface Props {
   conversation: Conversation;
 }
 
+// ConversationComponent functional component
 export const ConversationComponent = ({ conversation }: Props) => {
+  // Destructuring necessary values and functions from contexts
   const {
     state: { selectedConversation, messageIsStreaming },
     handleSelectConversation,
@@ -34,10 +38,12 @@ export const ConversationComponent = ({ conversation }: Props) => {
 
   const { handleDeleteConversation } = useContext(ChatbarContext);
 
+  // State variables for managing renaming and deleting
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
 
+  // Function to handle 'Enter' key press
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -45,6 +51,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
     }
   };
 
+  // Function to handle drag start event
   const handleDragStart = (
     e: DragEvent<HTMLButtonElement>,
     conversation: Conversation,
@@ -54,6 +61,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
     }
   };
 
+  // Function to handle renaming a conversation
   const handleRename = (conversation: Conversation) => {
     if (renameValue.trim().length > 0) {
       handleUpdateConversation(conversation, {
@@ -65,6 +73,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
     }
   };
 
+   // Functions to handle confirmation and cancellation of actions
   const handleConfirm: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
     if (isDeleting) {
@@ -82,6 +91,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
     setIsRenaming(false);
   };
 
+   // Functions to open rename and delete modals
   const handleOpenRenameModal: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
     setIsRenaming(true);
@@ -92,6 +102,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
     setIsDeleting(true);
   };
 
+  // useEffect to ensure only one action is active at a time
   useEffect(() => {
     if (isRenaming) {
       setIsDeleting(false);
@@ -100,8 +111,10 @@ export const ConversationComponent = ({ conversation }: Props) => {
     }
   }, [isRenaming, isDeleting]);
 
+  // Rendering the component
   return (
     <div className="relative flex items-center">
+      {/* Conditional rendering for renaming */}
       {isRenaming && selectedConversation?.id === conversation.id ? (
         <div className="flex w-full items-center gap-3 rounded-lg bg-[#343541]/90 p-3">
           <IconMessage size={18} />
@@ -115,6 +128,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
           />
         </div>
       ) : (
+      // Conditional rendering for regular conversation button
         <button
           className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90 ${
             messageIsStreaming ? 'disabled:cursor-not-allowed' : ''
@@ -139,6 +153,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
         </button>
       )}
 
+      {/* Conditional rendering for confirmation/cancellation buttons */}
       {(isDeleting || isRenaming) &&
         selectedConversation?.id === conversation.id && (
           <div className="absolute right-1 z-10 flex text-gray-300">
@@ -151,6 +166,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
           </div>
         )}
 
+      {/* Conditional rendering for rename/delete buttons */}
       {selectedConversation?.id === conversation.id &&
         !isDeleting &&
         !isRenaming && (
