@@ -1,9 +1,11 @@
+// Utility functions to clean up conversation and conversation history data
 import { Conversation } from '@/types/chat';
 import { OpenAIModelID, OpenAIModels } from '@/types/openai';
 
 import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from './const';
 
 export const cleanSelectedConversation = (conversation: Conversation) => {
+  // Add default values for missing properties
   // added model for each conversation (3/20/23)
   // added system prompt for each conversation (3/21/23)
   // added folders (3/23/23)
@@ -53,6 +55,7 @@ export const cleanSelectedConversation = (conversation: Conversation) => {
 };
 
 export const cleanConversationHistory = (history: any[]): Conversation[] => {
+  // Add default values for missing properties in each conversation
   // added model for each conversation (3/20/23)
   // added system prompt for each conversation (3/21/23)
   // added folders (3/23/23)
