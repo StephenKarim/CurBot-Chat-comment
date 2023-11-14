@@ -1,3 +1,4 @@
+// Importing necessary dependencies
 import { useCallback, useContext, useEffect } from 'react';
 
 import { useTranslation } from 'next-i18next';
@@ -9,30 +10,38 @@ import { saveConversation, saveConversations } from '@/utils/app/conversation';
 import { saveFolders } from '@/utils/app/folders';
 import { exportData, importData } from '@/utils/app/importExport';
 
+// Importing types
 import { Conversation } from '@/types/chat';
 import { LatestExportFormat, SupportedExportFormats } from '@/types/export';
 import { OpenAIModels } from '@/types/openai';
 import { PluginKey } from '@/types/plugin';
 
+// Importing contexts
 import HomeContext from '@/pages/api/home/home.context';
 
+// Importing components
 import { ChatFolders } from './components/ChatFolders';
 import { ChatbarSettings } from './components/ChatbarSettings';
 import { Conversations } from './components/Conversations';
 
 import Sidebar from '../Sidebar';
 import ChatbarContext from './Chatbar.context';
+
+// Importing state and utility functions
 import { ChatbarInitialState, initialState } from './Chatbar.state';
 
 import { v4 as uuidv4 } from 'uuid';
-
+// Component definition
 export const Chatbar = () => {
+  // Initializing translation function
   const { t } = useTranslation('sidebar');
 
+  // Creating the Chatbar context value using a reducer
   const chatBarContextValue = useCreateReducer<ChatbarInitialState>({
     initialState,
   });
 
+  // Destructuring values from contexts and state
   const {
     state: { conversations, showChatbar, defaultModelId, folders, pluginKeys },
     dispatch: homeDispatch,
@@ -46,6 +55,7 @@ export const Chatbar = () => {
     dispatch: chatDispatch,
   } = chatBarContextValue;
 
+  // Handling API key change
   const handleApiKeyChange = useCallback(
     (apiKey: string) => {
       homeDispatch({ field: 'apiKey', value: apiKey });
@@ -55,6 +65,7 @@ export const Chatbar = () => {
     [homeDispatch],
   );
 
+  // Handling plugin key change
   const handlePluginKeyChange = (pluginKey: PluginKey) => {
     if (pluginKeys.some((key) => key.pluginId === pluginKey.pluginId)) {
       const updatedPluginKeys = pluginKeys.map((key) => {
@@ -78,6 +89,7 @@ export const Chatbar = () => {
     }
   };
 
+  // Handling clearing plugin key
   const handleClearPluginKey = (pluginKey: PluginKey) => {
     const updatedPluginKeys = pluginKeys.filter(
       (key) => key.pluginId !== pluginKey.pluginId,
@@ -94,10 +106,12 @@ export const Chatbar = () => {
     localStorage.setItem('pluginKeys', JSON.stringify(updatedPluginKeys));
   };
 
+  // Handling data export
   const handleExportData = () => {
     exportData();
   };
 
+  // Handling data import
   const handleImportConversations = (data: SupportedExportFormats) => {
     const { history, folders, prompts }: LatestExportFormat = importData(data);
     homeDispatch({ field: 'conversations', value: history });
@@ -111,6 +125,7 @@ export const Chatbar = () => {
     window.location.reload();
   };
 
+  // Handling clearing conversations
   const handleClearConversations = () => {
     defaultModelId &&
       homeDispatch({
@@ -137,6 +152,7 @@ export const Chatbar = () => {
     saveFolders(updatedFolders);
   };
 
+   // Handling conversation deletion
   const handleDeleteConversation = (conversation: Conversation) => {
     const updatedConversations = conversations.filter(
       (c) => c.id !== conversation.id,
@@ -172,11 +188,13 @@ export const Chatbar = () => {
     }
   };
 
+  // Handling chatbar toggle
   const handleToggleChatbar = () => {
     homeDispatch({ field: 'showChatbar', value: !showChatbar });
     localStorage.setItem('showChatbar', JSON.stringify(!showChatbar));
   };
 
+  // Handling drop event to move conversations to the default folder (folderId: 0)
   const handleDrop = (e: any) => {
     if (e.dataTransfer) {
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
@@ -186,6 +204,7 @@ export const Chatbar = () => {
     }
   };
 
+  // Effect to filter conversations based on search term
   useEffect(() => {
     if (searchTerm) {
       chatDispatch({
@@ -206,6 +225,7 @@ export const Chatbar = () => {
     }
   }, [searchTerm, conversations]);
 
+  // Rendering the Chatbar component
   return (
     <ChatbarContext.Provider
       value={{
