@@ -1,3 +1,4 @@
+// Define a mapping of programming languages to their file extensions
 interface languageMap {
   [key: string]: string | undefined;
 }
