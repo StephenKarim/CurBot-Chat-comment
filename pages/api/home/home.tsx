@@ -1,3 +1,4 @@
+// Import React hooks and components from various libraries and files
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 
@@ -6,6 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 
+// Import custom hooks and utility functions
 import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import useErrorService from '@/services/errorService';
@@ -25,6 +27,7 @@ import { saveFolders } from '@/utils/app/folders';
 import { savePrompts } from '@/utils/app/prompts';
 import { getSettings } from '@/utils/app/settings';
 
+// Import types and components
 import { Conversation } from '@/types/chat';
 import { KeyValuePair } from '@/types/data';
 import { FolderInterface, FolderType } from '@/types/folder';
@@ -41,18 +44,22 @@ import { HomeInitialState, initialState } from './home.state';
 
 import { v4 as uuidv4 } from 'uuid';
 
+// Define Props interface
 interface Props {
   serverSideApiKeyIsSet: boolean;
   serverSidePluginKeysSet: boolean;
   defaultModelId: OpenAIModelID;
 }
 
+// Define Home component
 const Home = ({
   serverSideApiKeyIsSet,
   serverSidePluginKeysSet,
   defaultModelId,
 }: Props) => {
+  // Initialize translation function
   const { t } = useTranslation('chat');
+  // Initialize services and state
   const { getModels } = useApiService();
   const { getModelsError } = useErrorService();
   const [initialRender, setInitialRender] = useState<boolean>(true);
@@ -61,6 +68,7 @@ const Home = ({
     initialState,
   });
 
+  // Destructure state and dispatch function from context
   const {
     state: {
       apiKey,
@@ -74,8 +82,10 @@ const Home = ({
     dispatch,
   } = contextValue;
 
+  // Create a ref for stopping conversation
   const stopConversationRef = useRef<boolean>(false);
 
+  // Fetch models using react-query
   const { data, error, refetch } = useQuery(
     ['GetModels', apiKey, serverSideApiKeyIsSet],
     ({ signal }) => {
@@ -91,16 +101,18 @@ const Home = ({
     { enabled: true, refetchOnMount: false },
   );
 
+  // Update state based on fetched models
   useEffect(() => {
     if (data) dispatch({ field: 'models', value: data });
   }, [data, dispatch]);
 
+  // Update state based on models fetch error
   useEffect(() => {
     dispatch({ field: 'modelError', value: getModelsError(error) });
   }, [dispatch, error, getModelsError]);
 
-  // FETCH MODELS ----------------------------------------------
-
+  // FETCH MODELS
+  // Handle selection of a conversation
   const handleSelectConversation = (conversation: Conversation) => {
     dispatch({
       field: 'selectedConversation',
@@ -110,8 +122,8 @@ const Home = ({
     saveConversation(conversation);
   };
 
-  // FOLDER OPERATIONS  --------------------------------------------
-
+  // FOLDER OPERATIONS
+  // Handle creation of a new folder
   const handleCreateFolder = (name: string, type: FolderType) => {
     const newFolder: FolderInterface = {
       id: uuidv4(),
@@ -125,6 +137,7 @@ const Home = ({
     saveFolders(updatedFolders);
   };
 
+  // Handle deletion of a folder
   const handleDeleteFolder = (folderId: string) => {
     const updatedFolders = folders.filter((f) => f.id !== folderId);
     dispatch({ field: 'folders', value: updatedFolders });
@@ -159,6 +172,7 @@ const Home = ({
     savePrompts(updatedPrompts);
   };
 
+  // Handle updating folder information
   const handleUpdateFolder = (folderId: string, name: string) => {
     const updatedFolders = folders.map((f) => {
       if (f.id === folderId) {
@@ -176,8 +190,8 @@ const Home = ({
     saveFolders(updatedFolders);
   };
 
-  // CONVERSATION OPERATIONS  --------------------------------------------
-
+  // CONVERSATION OPERATIONS
+  // Handle creation of a new conversation
   const handleNewConversation = () => {
     const lastConversation = conversations[conversations.length - 1];
 
@@ -196,6 +210,7 @@ const Home = ({
       folderId: null,
     };
 
+    // Handle updating information in a conversation
     const updatedConversations = [...conversations, newConversation];
 
     dispatch({ field: 'selectedConversation', value: newConversation });
@@ -207,15 +222,18 @@ const Home = ({
     dispatch({ field: 'loading', value: false });
   };
 
+  // Update a conversation with new data
   const handleUpdateConversation = (
     conversation: Conversation,
     data: KeyValuePair,
   ) => {
+    // Create a new conversation object with updated data
     const updatedConversation = {
       ...conversation,
       [data.key]: data.value,
     };
 
+     // Update the state with the new conversation and all conversations
     const { single, all } = updateConversation(
       updatedConversation,
       conversations,
@@ -225,14 +243,15 @@ const Home = ({
     dispatch({ field: 'conversations', value: all });
   };
 
-  // EFFECTS  --------------------------------------------
-
+  // EFFECTS 
+// Adjust UI based on window width
   useEffect(() => {
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
     }
   }, [selectedConversation]);
 
+  // Handle initial rendering and set default values
   useEffect(() => {
     defaultModelId &&
       dispatch({ field: 'defaultModelId', value: defaultModelId });
@@ -248,10 +267,12 @@ const Home = ({
       });
   }, [defaultModelId, serverSideApiKeyIsSet, serverSidePluginKeysSet]);
 
-  // ON LOAD --------------------------------------------
-
+  // ON LOAD
+  // Handle initial settings and data loading on page load
   useEffect(() => {
+    // Get user settings from local storage
     const settings = getSettings();
+    // Apply saved theme to the UI
     if (settings.theme) {
       dispatch({
         field: 'lightMode',
@@ -259,6 +280,7 @@ const Home = ({
       });
     }
 
+    // Get API key from local storage or clear it if it's a server-side setting
     const apiKey = localStorage.getItem('apiKey');
 
     if (serverSideApiKeyIsSet) {
@@ -269,6 +291,7 @@ const Home = ({
       dispatch({ field: 'apiKey', value: apiKey });
     }
 
+    // Handle plugin keys
     const pluginKeys = localStorage.getItem('pluginKeys');
     if (serverSidePluginKeysSet) {
       dispatch({ field: 'pluginKeys', value: [] });
@@ -277,11 +300,13 @@ const Home = ({
       dispatch({ field: 'pluginKeys', value: pluginKeys });
     }
 
+    // Adjust UI for smaller screens
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
     }
 
+    // Retrieve and apply saved user preferences
     const showChatbar = localStorage.getItem('showChatbar');
     if (showChatbar) {
       dispatch({ field: 'showChatbar', value: showChatbar === 'true' });
@@ -292,6 +317,7 @@ const Home = ({
       dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
 
+    // Retrieve saved folders and prompts
     const folders = localStorage.getItem('folders');
     if (folders) {
       dispatch({ field: 'folders', value: JSON.parse(folders) });
@@ -302,6 +328,7 @@ const Home = ({
       dispatch({ field: 'prompts', value: JSON.parse(prompts) });
     }
 
+    // Retrieve and clean conversation history
     const conversationHistory = localStorage.getItem('conversationHistory');
     if (conversationHistory) {
       const parsedConversationHistory: Conversation[] =
@@ -313,6 +340,7 @@ const Home = ({
       dispatch({ field: 'conversations', value: cleanedConversationHistory });
     }
 
+    // Retrieve and clean selected conversation
     const selectedConversation = localStorage.getItem('selectedConversation');
     if (selectedConversation) {
       const parsedSelectedConversation: Conversation =
@@ -326,6 +354,7 @@ const Home = ({
         value: cleanedSelectedConversation,
       });
     } else {
+      // If no selected conversation, create a new one
       const lastConversation = conversations[conversations.length - 1];
       dispatch({
         field: 'selectedConversation',
@@ -347,6 +376,7 @@ const Home = ({
     serverSidePluginKeysSet,
   ]);
 
+  // Return the JSX for the Home component
   return (
     <HomeContext.Provider
       value={{
@@ -393,9 +423,11 @@ const Home = ({
     </HomeContext.Provider>
   );
 };
-export default Home;
+export default Home; // Export the Home component as the default export
 
+// Define server-side properties for the Home component using Next.js function getServerSideProps
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  // Determine the default model ID based on environment variables
   const defaultModelId =
     (process.env.DEFAULT_MODEL &&
       Object.values(OpenAIModelID).includes(
@@ -404,6 +436,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       process.env.DEFAULT_MODEL) ||
     fallbackModelID;
 
+  // Check if Google API key and CSE ID are present to determine if server-side plugins are set
   let serverSidePluginKeysSet = false;
 
   const googleApiKey = process.env.GOOGLE_API_KEY;
@@ -413,12 +446,13 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
     serverSidePluginKeysSet = true;
   }
 
+  // Return props to be passed to the Home component
   return {
     props: {
-      serverSideApiKeyIsSet: !!process.env.OPENAI_API_KEY,
-      defaultModelId,
-      serverSidePluginKeysSet,
-      ...(await serverSideTranslations(locale ?? 'en', [
+      serverSideApiKeyIsSet: !!process.env.OPENAI_API_KEY, // Check if OpenAI API key is set on the server side
+      defaultModelId, // Provide the default model ID
+      serverSidePluginKeysSet, // Indicate if server-side plugin keys are set
+      ...(await serverSideTranslations(locale ?? 'en', [ // Load translations for specified locales
         'common',
         'chat',
         'sidebar',
