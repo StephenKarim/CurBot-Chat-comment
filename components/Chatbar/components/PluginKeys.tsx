@@ -1,13 +1,18 @@
- import { IconHome, IconKey } from '@tabler/icons-react';
+// Importing necessary dependencies and components
+import { IconHome, IconKey } from '@tabler/icons-react';
  import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
  import { useTranslation } from 'react-i18next';
 
+// Importing types
 import { PluginID, PluginKey } from '@/types/plugin';
 
+// Importing context
 import HomeContext from '@/pages/api/home/home.context';
 
+// Importing component
 import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 
+// Importing context
 import ChatbarContext from '../Chatbar.context';
 
 // export const PluginKeys = () => {
