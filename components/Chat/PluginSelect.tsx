@@ -1,28 +1,38 @@
+// Importing necessary dependencies from external libraries
 import { FC, useEffect, useRef } from 'react';
 
+// Importing translation hook from Next.js i18next integration
 import { useTranslation } from 'next-i18next';
 
+// Importing types for plugin-related data
 import { Plugin, PluginList } from '@/types/plugin';
 
+// Props interface for PluginSelect component
 interface Props {
   plugin: Plugin | null;
   onPluginChange: (plugin: Plugin) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLSelectElement>) => void;
 }
 
+// PluginSelect component for selecting plugins
 export const PluginSelect: FC<Props> = ({
   plugin,
   onPluginChange,
   onKeyDown,
 }) => {
+  // Using the translation hook
   const { t } = useTranslation('chat');
 
+  // Creating a reference for the select element
   const selectRef = useRef<HTMLSelectElement>(null);
 
+  // Handling keydown events for plugin selection
   const handleKeyDown = (e: React.KeyboardEvent<HTMLSelectElement>) => {
+    // Extracting the select element and option count
     const selectElement = selectRef.current;
     const optionCount = selectElement?.options.length || 0;
 
+    // Handling key combinations to navigate through options
     if (e.key === '/' && e.metaKey) {
       e.preventDefault();
       if (selectElement) {
@@ -43,6 +53,7 @@ export const PluginSelect: FC<Props> = ({
         selectElement.dispatchEvent(new Event('change'));
       }
 
+      // Updating the selected plugin based on the selected option
       onPluginChange(
         PluginList.find(
           (plugin) =>
@@ -50,19 +61,24 @@ export const PluginSelect: FC<Props> = ({
         ) as Plugin,
       );
     } else {
+      // Handling other keydown events
       onKeyDown(e);
     }
   };
 
+  // Focusing on the select element when the component mounts
   useEffect(() => {
     if (selectRef.current) {
       selectRef.current.focus();
     }
   }, []);
 
+  // Rendering the PluginSelect component
   return (
     <div className="flex flex-col">
+      {/* Container for the plugin selection dropdown */}
       <div className="mb-1 w-full rounded border border-neutral-200 bg-transparent pr-2 text-neutral-900 dark:border-neutral-600 dark:text-white">
+        {/* Select element for choosing a plugin */}
         <select
           ref={selectRef}
           className="w-full cursor-pointer bg-transparent p-2"
@@ -79,6 +95,7 @@ export const PluginSelect: FC<Props> = ({
             handleKeyDown(e);
           }}
         >
+          {/* Default option for ChatGPT */}
           <option
             key="chatgpt"
             value="chatgpt"
@@ -87,6 +104,7 @@ export const PluginSelect: FC<Props> = ({
             ChatGPT
           </option>
 
+          {/* Mapping over available plugins to generate dropdown options */}
           {PluginList.map((plugin) => (
             <option
               key={plugin.id}
@@ -101,3 +119,4 @@ export const PluginSelect: FC<Props> = ({
     </div>
   );
 };
+

@@ -1,3 +1,4 @@
+// Importing icons from @tabler/icons-react library
 import {
   IconArrowDown,
   IconBolt,
@@ -6,6 +7,8 @@ import {
   IconRepeat,
   IconSend,
 } from '@tabler/icons-react';
+
+// Importing React and other necessary hooks and components
 import {
   KeyboardEvent,
   MutableRefObject,
@@ -16,18 +19,23 @@ import {
   useState,
 } from 'react';
 
+// Localization hook for translation
 import { useTranslation } from 'next-i18next';
 
+// Importing types used in the component
 import { Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 
+// Importing context for managing state across components
 import HomeContext from '@/pages/api/home/home.context';
 
+// Importing child components
 import { PluginSelect } from './PluginSelect';
 import { PromptList } from './PromptList';
 import { VariableModal } from './VariableModal';
 
+// Props interface for the component
 interface Props {
   onSend: (message: Message, plugin: Plugin | null) => void;
   onRegenerate: () => void;
@@ -37,6 +45,7 @@ interface Props {
   showScrollDownButton: boolean;
 }
 
+// Main functional component for the chat input
 export const ChatInput = ({
   onSend,
   onRegenerate,
@@ -45,14 +54,17 @@ export const ChatInput = ({
   textareaRef,
   showScrollDownButton,
 }: Props) => {
+  // Localization hook
   const { t } = useTranslation('chat');
 
+  // Accessing state and dispatch from the context
   const {
     state: { selectedConversation, messageIsStreaming, prompts },
 
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
+  // State variables for managing component state
   const [content, setContent] = useState<string>();
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [showPromptList, setShowPromptList] = useState(false);
@@ -63,16 +75,20 @@ export const ChatInput = ({
   const [showPluginSelect, setShowPluginSelect] = useState(false);
   const [plugin, setPlugin] = useState<Plugin | null>(null);
 
+  // Ref for the prompt list
   const promptListRef = useRef<HTMLUListElement | null>(null);
 
+  // Filtering prompts based on input value
   const filteredPrompts = prompts.filter((prompt) =>
     prompt.name.toLowerCase().includes(promptInputValue.toLowerCase()),
   );
 
+  // Handling text area change
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     const maxLength = selectedConversation?.model.maxLength;
 
+    // Checking message length against the maximum allowed length
     if (maxLength && value.length > maxLength) {
       alert(
         t(
@@ -83,36 +99,45 @@ export const ChatInput = ({
       return;
     }
 
+    // Updating content and prompt list visibility
     setContent(value);
     updatePromptListVisibility(value);
   };
 
+  // Handling send button click
   const handleSend = () => {
+    // Checking if message is still streaming
     if (messageIsStreaming) {
       return;
     }
 
+    // Checking if content is empty
     if (!content) {
       alert(t('Please enter a message'));
       return;
     }
 
+    // Sending user message and resetting content and plugin
     onSend({ role: 'user', content }, plugin);
     setContent('');
     setPlugin(null);
 
+    // Blurring the textarea on small screens
     if (window.innerWidth < 640 && textareaRef && textareaRef.current) {
       textareaRef.current.blur();
     }
   };
 
+  // Handling stop conversation button click
   const handleStopConversation = () => {
+    // Setting a flag to stop the conversation and resetting it after a delay
     stopConversationRef.current = true;
     setTimeout(() => {
       stopConversationRef.current = false;
     }, 1000);
   };
 
+  // Checking if the user is on a mobile device
   const isMobile = () => {
     const userAgent =
       typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
@@ -121,9 +146,11 @@ export const ChatInput = ({
     return mobileRegex.test(userAgent);
   };
 
+  // Handling initialization of the modal for selecting prompts
   const handleInitModal = () => {
     const selectedPrompt = filteredPrompts[activePromptIndex];
     if (selectedPrompt) {
+      // Updating content based on selected prompt and handling prompt selection
       setContent((prevContent) => {
         const newContent = prevContent?.replace(
           /\/\w*$/,
@@ -136,8 +163,10 @@ export const ChatInput = ({
     setShowPromptList(false);
   };
 
+  // Handling keyboard events in the text area
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (showPromptList) {
+      // Handling arrow keys, tab, enter, and escape in the prompt list
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         setActivePromptIndex((prevIndex) =>
@@ -163,14 +192,17 @@ export const ChatInput = ({
         setActivePromptIndex(0);
       }
     } else if (e.key === 'Enter' && !isTyping && !isMobile() && !e.shiftKey) {
+      // Handling enter key to send message
       e.preventDefault();
       handleSend();
     } else if (e.key === '/' && e.metaKey) {
+      // Handling '/' key with meta key to toggle plugin select
       e.preventDefault();
       setShowPluginSelect(!showPluginSelect);
     }
   };
 
+  // Parsing variables from content
   const parseVariables = (content: string) => {
     const regex = /{{(.*?)}}/g;
     const foundVariables = [];
@@ -183,6 +215,7 @@ export const ChatInput = ({
     return foundVariables;
   };
 
+  // Updating prompt list visibility based on text
   const updatePromptListVisibility = useCallback((text: string) => {
     const match = text.match(/\/\w*$/);
 
@@ -195,13 +228,16 @@ export const ChatInput = ({
     }
   }, []);
 
+  // Handling prompt selection
   const handlePromptSelect = (prompt: Prompt) => {
     const parsedVariables = parseVariables(prompt.content);
     setVariables(parsedVariables);
 
     if (parsedVariables.length > 0) {
+      // Showing variable modal if variables are present
       setIsModalVisible(true);
     } else {
+      // Updating content based on selected prompt and prompt visibility
       setContent((prevContent) => {
         const updatedContent = prevContent?.replace(/\/\w*$/, prompt.content);
         return updatedContent;
@@ -210,6 +246,7 @@ export const ChatInput = ({
     }
   };
 
+  // Handling variable submission
   const handleSubmit = (updatedVariables: string[]) => {
     const newContent = content?.replace(/{{(.*?)}}/g, (match, variable) => {
       const index = variables.indexOf(variable);
@@ -218,17 +255,20 @@ export const ChatInput = ({
 
     setContent(newContent);
 
+    // Focusing on textarea after variable submission
     if (textareaRef && textareaRef.current) {
       textareaRef.current.focus();
     }
   };
 
+  // Effect for scrolling the prompt list based on active index
   useEffect(() => {
     if (promptListRef.current) {
       promptListRef.current.scrollTop = activePromptIndex * 30;
     }
   }, [activePromptIndex]);
 
+  // Effect for adjusting textarea height and overflow
   useEffect(() => {
     if (textareaRef && textareaRef.current) {
       textareaRef.current.style.height = 'inherit';
@@ -239,6 +279,7 @@ export const ChatInput = ({
     }
   }, [content]);
 
+  // Effect for handling clicks outside the prompt list
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (
@@ -256,10 +297,12 @@ export const ChatInput = ({
     };
   }, []);
 
+  // Rendering the chat input component
   return (
     <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2">
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
         {messageIsStreaming && (
+          // Button to stop conversation during message streaming
           <button
             className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
             onClick={handleStopConversation}
@@ -271,6 +314,7 @@ export const ChatInput = ({
         {!messageIsStreaming &&
           selectedConversation &&
           selectedConversation.messages.length > 0 && (
+            // Button to regenerate response when not streaming
             <button
               className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
               onClick={onRegenerate}
@@ -280,15 +324,19 @@ export const ChatInput = ({
           )}
 
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
-          {/* <button
-            className="absolute left-2 top-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
-            onClick={() => setShowPluginSelect(!showPluginSelect)}
-            onKeyDown={(e) => {}} removed
-          >
-            {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
-          </button> */}
+          {/* 
+            Removed button for selecting plugin
+            <button
+              className="absolute left-2 top-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
+              onClick={() => setShowPluginSelect(!showPluginSelect)}
+              onKeyDown={(e) => {}}
+            >
+              {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
+            </button> 
+          */}
 
           {showPluginSelect && (
+            // Plugin selection dropdown
             <div className="absolute left-0 bottom-14 rounded bg-white dark:bg-[#343541]">
               <PluginSelect
                 plugin={plugin}
@@ -311,6 +359,7 @@ export const ChatInput = ({
             </div>
           )}
 
+          {/* Textarea for entering messages */}
           <textarea
             ref={textareaRef}
             className="m-0 w-full resize-none border-0 bg-transparent p-0 py-2 pr-8 pl-10 text-black dark:bg-transparent dark:text-white md:py-3 md:pl-10"

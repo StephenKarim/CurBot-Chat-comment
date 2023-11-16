@@ -1,7 +1,10 @@
+// Importing necessary dependencies from React
 import { FC, MutableRefObject } from 'react';
 
+// Importing the Prompt type
 import { Prompt } from '@/types/prompt';
 
+// Props interface for the PromptList component
 interface Props {
   prompts: Prompt[];
   activePromptIndex: number;
@@ -10,6 +13,7 @@ interface Props {
   promptListRef: MutableRefObject<HTMLUListElement | null>;
 }
 
+// PromptList component for displaying a list of prompts
 export const PromptList: FC<Props> = ({
   prompts,
   activePromptIndex,
@@ -17,6 +21,7 @@ export const PromptList: FC<Props> = ({
   onMouseOver,
   promptListRef,
 }) => {
+  // Rendering the list of prompts
   return (
     <ul
       ref={promptListRef}
@@ -31,8 +36,10 @@ export const PromptList: FC<Props> = ({
               : ''
           } cursor-pointer px-3 py-2 text-sm text-black dark:text-white`}
           onClick={(e) => {
+            // Preventing default click behavior and stopping propagation
             e.preventDefault();
             e.stopPropagation();
+            // Triggering the onSelect callback
             onSelect();
           }}
           onMouseEnter={() => onMouseOver(index)}
