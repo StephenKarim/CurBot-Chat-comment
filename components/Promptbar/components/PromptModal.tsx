@@ -1,24 +1,32 @@
+// Importing necessary dependencies from React and Next.js
 import { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
-
 import { useTranslation } from 'next-i18next';
 
+// Importing the Prompt type
 import { Prompt } from '@/types/prompt';
 
+// Interface for the component's props
 interface Props {
   prompt: Prompt;
   onClose: () => void;
   onUpdatePrompt: (prompt: Prompt) => void;
 }
 
+// Functional component for rendering a modal for editing a Prompt
 export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
+  // Using the translation hook from next-i18next
   const { t } = useTranslation('promptbar');
+
+  // State variables to manage the values of name, description, and content
   const [name, setName] = useState(prompt.name);
   const [description, setDescription] = useState(prompt.description);
   const [content, setContent] = useState(prompt.content);
 
+  // Refs for DOM elements
   const modalRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Event handler for handling the Enter key
   const handleEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       onUpdatePrompt({ ...prompt, name, description, content: content.trim() });
@@ -26,6 +34,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
     }
   };
 
+  // useEffect to add and remove event listeners for mouse events
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -45,10 +54,12 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
     };
   }, [onClose]);
 
+  // useEffect to focus on the name input when the modal is opened
   useEffect(() => {
     nameInputRef.current?.focus();
   }, []);
 
+  // Rendering the modal component
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -66,6 +77,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
             className="dark:border-netural-400 inline-block max-h-[400px] transform overflow-y-auto rounded-lg border border-gray-300 bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all dark:bg-[#202123] sm:my-8 sm:max-h-[600px] sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
             role="dialog"
           >
+            {/* Input for the prompt name */}
             <div className="text-sm font-bold text-black dark:text-neutral-200">
               {t('Name')}
             </div>
@@ -77,6 +89,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               onChange={(e) => setName(e.target.value)}
             />
 
+            {/* Textarea for the prompt description */}
             <div className="mt-6 text-sm font-bold text-black dark:text-neutral-200">
               {t('Description')}
             </div>
@@ -89,6 +102,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               rows={3}
             />
 
+            {/* Textarea for the prompt content */}
             <div className="mt-6 text-sm font-bold text-black dark:text-neutral-200">
               {t('Prompt')}
             </div>
@@ -105,6 +119,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               rows={10}
             />
 
+            {/* Button to save changes */}
             <button
               type="button"
               className="w-full px-4 py-2 mt-6 border rounded-lg shadow border-neutral-500 text-neutral-900 hover:bg-neutral-100 focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
